@@ -53,8 +53,9 @@
       multi-dimensional array, puzzle.
 	
 */
-
+var puzzleCells;
 window.onload = init();
+
 
 function init(){
    document.getElementById("puzzleTitle").innerHTML = "Puzzle 1";
@@ -65,6 +66,24 @@ function init(){
    for(var i = 0; i < puzzleButtons.length; i++){
       puzzleButtons[i].onclick = swapPuzzle;
    }
+
+   setupPuzzle();   
+}
+
+function setupPuzzle(){
+   // match all of the data cells in the puzzle
+   puzzleCells = document.querySelectorAll("table#hanjieGrid td");
+
+   for(var i = 0; i < puzzleCells.length; i++){
+      puzzleCells[i].style.backgroundColor = "rgb(233, 207, 29)";
+      // set the cell background color in response to the mouse down event
+      puzzleCells[i].onmousedown = setBackground;
+   }
+}
+
+function setBackground(e){
+   var cellBackground = "rgb(101, 101, 101)";
+   e.target.style.backgroundColor = cellBackground;
 }
 
 function swapPuzzle(e){
@@ -81,7 +100,9 @@ function swapPuzzle(e){
       case "puzzle3":
          document.getElementById("puzzle").innerHTML = drawPuzzle(puzzle3Hint, puzzle3Rating, puzzle3);
          break;
-   }                                                                 
+   }
+   
+   setupPuzzle();
 }
          
 /* ================================================================= */
