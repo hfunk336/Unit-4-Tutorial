@@ -54,6 +54,7 @@
 	
 */
 var puzzleCells;
+var cellBackground;
 window.onload = init();
 
 
@@ -67,7 +68,15 @@ function init(){
       puzzleButtons[i].onclick = swapPuzzle;
    }
 
-   setupPuzzle();   
+   setupPuzzle();
+   
+   document.addEventListener("mouseup", endBackground);
+}
+
+function endBackground(){
+   for(var i = 0; i < puzzleCells.length; i++){
+      puzzleCells[i].removeEventListener("mouseenter", extendBackground);
+   }
 }
 
 function setupPuzzle(){
@@ -82,8 +91,27 @@ function setupPuzzle(){
 }
 
 function setBackground(e){
-   var cellBackground = "rgb(101, 101, 101)";
+
+   // set the background based on key board key
+   if(e.shiftKey){
+      cellBackground = "rgb(233, 207, 29)";
+   }else if(e.altKey){
+      cellBackground = "rgb(255, 255, 255)";
+   }else{
+      cellBackground = "rgb(101, 101, 101)";
+   }
+   
    e.target.style.backgroundColor = cellBackground;
+
+   for(var i = 0; i < puzzleCells.length; i++){
+      puzzleCells[i].addEventListener("mouseenter", extendBackground);
+   }
+
+   e.preventDefault();
+}
+
+function extendBackground(e){
+   e.target.style.background = cellBackground;
 }
 
 function swapPuzzle(e){
