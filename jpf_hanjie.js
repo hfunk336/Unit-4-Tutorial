@@ -71,11 +71,23 @@ function init(){
    setupPuzzle();
    
    document.addEventListener("mouseup", endBackground);
+
+   // add event listener to the Show Solution Button
+
+   document.getElementById("solve").addEventListener("click",
+      function(){
+         // remove the inline background color styles from each cell
+         for(var i = 0; i < puzzleCells.length; i++){
+            puzzleCells[i].style.backgroundColor = "";
+         }
+      }
+   )
 }
 
 function endBackground(){
    for(var i = 0; i < puzzleCells.length; i++){
       puzzleCells[i].removeEventListener("mouseenter", extendBackground);
+      puzzleCells[i].style.cursor = "url(jpf_pencil.png)";
    }
 }
 
@@ -87,24 +99,86 @@ function setupPuzzle(){
       puzzleCells[i].style.backgroundColor = "rgb(233, 207, 29)";
       // set the cell background color in response to the mouse down event
       puzzleCells[i].onmousedown = setBackground;
+      //use a pencil image 
+      puzzleCells[i].style.cursor = "url(jpf_pencil.png)"
    }
+
+   // Check the puzzle solutioh
+   document.getElementById("hanjieGrid").addEventListener("mouseup", 
+      function(){
+         var solved = true;
+         for(var i = 0; i<puzzleCells.length; i++){
+            if((puzzleCells[i].className === "filled" && puzzleCells[i].style.backgroundColor !== "rgb(101, 101, 101)")
+            ||
+            (puzzleCells[i].className === "empty" && puzzleCells[i].style.backgroundColor === "rgb(101, 101, 101")){
+               solved = false;
+               break;
+            }
+         }
+         if(solved){
+            alert("You solved it!");
+         }
+      })
+
+
+
+   // create object collections of the filled an empty cells
+   var filled = document.querySelectorAll("table#hanjieGrid td.filled");
+   var empty = document.querySelectorAll("table#hanjieGrid td.empty");
+
+   // create an event listener to highlight the incorrect cells
+   document.getElementById("peek").addEventListener("click", function(){
+      // display incorrect white cells in pink
+      for(var i = 0; i < filled.length; i++){
+         if(filled[i].style.backgroundColor === "rgb(255, 255, 255)"){
+            filled[i].style.backgroundColor = "rgb(255, 211, 211)";
+         }
+      }
+      // displays incorrect grey cells in red
+      for(var i = 0; i < empty.length; i++){
+         if(empty[i].style.backgroundColor === "rgb(101, 101, 101)"){
+            empty[i].style.backgroundColor = "rgb(255, 101, 101)";
+         }
+      }
+
+      // remove the hint after 0.5 seconds
+      setTimeout(function(){
+         for(var i = 0; i < filled.length; i++){
+            if(filled[i].style.backgroundColor === "rgb(255, 211, 211)"){
+               filled[i].style.backgroundColor = "rgb(255, 255, 255)";
+            }
+         }
+         // displays incorrect grey cells in red
+         for(var i = 0; i < empty.length; i++){
+            if(empty[i].style.backgroundColor === "rgb(255, 101, 101)"){
+               empty[i].style.backgroundColor = "rgb(101, 101, 101)";
+            }
+         }
+      }, 500);
+
+   });
 }
 
 function setBackground(e){
+   var cursorType;
 
    // set the background based on key board key
    if(e.shiftKey){
       cellBackground = "rgb(233, 207, 29)";
+      cursorType = "url(jpf_eraser.png), cell";
    }else if(e.altKey){
       cellBackground = "rgb(255, 255, 255)";
+      cursorType = "url(jpf_cross.png), crosshair";
    }else{
       cellBackground = "rgb(101, 101, 101)";
+      cursorType = "url(jpf_pencil.png), pointer";
    }
    
    e.target.style.backgroundColor = cellBackground;
 
    for(var i = 0; i < puzzleCells.length; i++){
       puzzleCells[i].addEventListener("mouseenter", extendBackground);
+      puzzleCells[i].style.cursor = cursorType;
    }
 
    e.preventDefault();
@@ -115,22 +189,24 @@ function extendBackground(e){
 }
 
 function swapPuzzle(e){
-   var puzzleID = e.target.id;
-   var puzzleTitle = e.target.value;
-   document.getElementById("puzzleTitle").innerHTML = puzzleTitle;     
-   switch(puzzleID){
-      case "puzzle1":
-         document.getElementById("puzzle").innerHTML = drawPuzzle(puzzle1Hint, puzzle1Rating, puzzle1);
-         break;
-      case "puzzle2":
-         document.getElementById("puzzle").innerHTML = drawPuzzle(puzzle2Hint, puzzle2Rating, puzzle2);
-         break;
-      case "puzzle3":
-         document.getElementById("puzzle").innerHTML = drawPuzzle(puzzle3Hint, puzzle3Rating, puzzle3);
-         break;
-   }
-   
-   setupPuzzle();
+   if(confirm("YOU WILL LOSE ALL PROGRESS: continue?")){
+      var puzzleID = e.target.id;
+      var puzzleTitle = e.target.value;
+      document.getElementById("puzzleTitle").innerHTML = puzzleTitle;     
+      switch(puzzleID){
+         case "puzzle1":
+            document.getElementById("puzzle").innerHTML = drawPuzzle(puzzle1Hint, puzzle1Rating, puzzle1);
+            break;
+         case "puzzle2":
+            document.getElementById("puzzle").innerHTML = drawPuzzle(puzzle2Hint, puzzle2Rating, puzzle2);
+            break;
+         case "puzzle3":
+            document.getElementById("puzzle").innerHTML = drawPuzzle(puzzle3Hint, puzzle3Rating, puzzle3);
+            break;
+      }
+      
+      setupPuzzle();
+   }  
 }
          
 /* ================================================================= */
